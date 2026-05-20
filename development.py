@@ -14,32 +14,25 @@ country_col = "Country"
 st.subheader("Dataset Preview")
 st.write(df.head())
 
-# -----------------------------
+
 # LOAD SAVED MODELS
-# -----------------------------
 scaler = joblib.load("clustering_scaler.pkl")
 pca = joblib.load("clustering_pca.pkl")
 kmeans = joblib.load("clustering_kmeans.pkl")
 
-# -----------------------------
 # USE ALL NUMERIC FEATURES
-# -----------------------------
 numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
 features = numeric_cols
 
 X = df[features]
 
-# -----------------------------
 # TRANSFORM DATA
-# -----------------------------
 X_scaled = scaler.transform(X)
 X_pca = pca.transform(X_scaled)
 
 df['Cluster'] = kmeans.predict(X_pca)
 
-# -----------------------------
 # CLUSTER LABELING
-# -----------------------------
 cluster_means = df.groupby('Cluster')[features[0]].mean()
 sorted_clusters = cluster_means.sort_values().index.tolist()
 
@@ -51,17 +44,15 @@ cluster_labels = {
 
 df['Development'] = df['Cluster'].map(cluster_labels)
 
-# -----------------------------
+
 # INPUT MODE
-# -----------------------------
 mode = st.radio(
     "Choose Input Type",
     ["Select Existing Country", "Enter Custom Values"]
 )
 
-# -----------------------------
+
 # EXISTING COUNTRY
-# -----------------------------
 if mode == "Select Existing Country":
 
     selected_country = st.selectbox(
@@ -75,9 +66,8 @@ if mode == "Select Existing Country":
     st.write("### Selected Country Data")
     st.write(input_data)
 
-# -----------------------------
+
 # CUSTOM INPUT
-# -----------------------------
 else:
     st.subheader("Enter Custom Country Data")
     custom_country_name = st.text_input(
@@ -97,17 +87,15 @@ else:
 
     st.write("### Your Input Data")
     st.write(input_data)
-    # -----------------------------
+    
 # COMMON NAME VARIABLE
-# -----------------------------
 if mode == "Select Existing Country":
     name = selected_country
 else:
     name = custom_country_name
 
-# -----------------------------
+
 # PREDICTION
-# -----------------------------
 input_df = pd.DataFrame([input_data])
 input_df = input_df[features]  # ensure correct order
 
@@ -119,9 +107,8 @@ dev_label = cluster_labels[cluster]
 
 st.success(f"🌍 Predicted Development: **{dev_label}** (Cluster {cluster})")
 
-# -----------------------------
+
 # VISUALIZATION (PCA)
-# -----------------------------
 plt.figure(figsize=(8,6))
 
 for c in range(3):
